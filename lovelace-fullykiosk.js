@@ -15,34 +15,54 @@ var FullyKiosk = FullyKiosk || (function() {
     fully.bind('screenOn', 'FullyKiosk.onScreenOn();');
     fully.bind('screenOff', 'FullyKiosk.onScreenOff();');
     fully.bind('onMotion', 'FullyKiosk.onMotion();');
+    let hass = document.querySelector('home-assistant').hass;
+    hass.connection.subscribeEvents((event)=> {
+      if(event.data.domain === 'light' && event.data.service_data.entity_id.toString() === _screen) {
+        switch(event.data.service) {
+          case 'turn_on':
+            fully.turnScreenOn();
+            _screen_state = true;
+            break;
+          case 'turn_off':
+            fully.turnScreenOff();
+            _screen_state = false;
+            break;
+        }
+        if(event.data.service_data.brightness)
+          fully.setScreenBrightness(event.data.service_data.brightness);
+      }
+    }, 'call_service');
   };
 
-  _syncState = function(screen_changed) {
-    clearTimeout(_sync_timer);
+  _sendScreenState = function() {
     let hass = document.querySelector('home-assistant').hass;
-    if(_motion_state_last != _motion_state)
-    {
-      _motion_state_last = _motion_state;
-      hass.callApi('post', "states/"+_motion, {state: _motion_state?'on':'off'});
-    }
-    if(screen_changed) {
-      if(_screen_state_last != _screen_state)
-      {
-        _screen_state_last = _screen_state;
-        let service = _screen_state ? 'turn_on':'turn_off';
-        hass.callService('homeassistant', service, {entity_id: _screen});
-      }
-    } else {
-      _screen_state = hass.states[_screen].state == "on"?true:false;
-      if(_screen_state)
-        fully.turnScreenOn();
-      else
-        fully.turnScreenOff();
-    }
+    hass.callApi('post', "states/"+_screen, {
+      state: _screen_state?'on':'off',
+      attributes: {
+        brightness: fully.getScreenBrightness()*255/170,
+        supported_features: 1,
+        battery_level: fully.getBatteryLevel(),
+        charging: fully.isPlugged(),
+      },
+    });
+  }
+
+  _sendMotionState = function() {
+    clearTimeout(_sync_timer);
+    let timeout = _motion_state?5000:10000;
+    let hass = document.querySelector('home-assistant').hass;
+    hass.callApi('post', "states/"+_motion, {
+      state: _motion_state?'on':'off',
+      attributes: {
+        battery_level: fully.getBatteryLevel(),
+        charging: fully.isPlugged(),
+      },
+    });
+    _sendScreenState();
     _sync_timer = setTimeout(() => {
       _motion_state = false;
-      _syncState(false);
-    }, 5000);
+      _sendMotionState(false);
+    }, timeout);
   };
 
   return {
@@ -53,20 +73,20 @@ var FullyKiosk = FullyKiosk || (function() {
         _screen = screen;
         _motion = motion;
         _register();
-        _syncState(true);
+        _sendMotionState();
       }
     },
     onScreenOn: () => {
       _screen_state = true;
-      _syncState(true);
+      _sendScreenState();
     },
     onScreenOff: () => {
       _screen_state = false;
-      _syncState(true);
+      _sendScreenState();
     },
     onMotion: () => {
       _motion_state = true;
-      _syncState(true);
+      _sendMotionState();
     }
   };
 }());
