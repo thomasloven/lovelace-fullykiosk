@@ -3,11 +3,11 @@
 Lovelace plugin for use with
 [Fully Kiosk Browser](https://www.ozerov.de/fully-kiosk-browser/).
 
-Allows home-assistant to 
+This enables home-assistant to monitor and controll te screen of an android device currently viewing your lovelace UI. It can also lets you add a sensor for motion in front of the camera of the device as well as battery and charging status.
 
 ## Installation
 
-1. Copy `lovelace-fullykiosk.js` to `<ha config>/www/lovelace-fullykiosk.js`
+1. Copy [`lovelace-fullykiosk.js`](https://raw.githubusercontent.com/thomasloven/lovelace-fullykiosk/master/lovelace-fullykiosk.js) to `<ha config>/www/lovelace-fullykiosk.js`
 
 2. Add a `light` and `binary_sensor` to your home-assistant config
 
@@ -29,7 +29,7 @@ binary_sensor:
 3. Add a file `<ha config>/www/kiosk-config.js` with the following contents:
 
 ```js
-setTimeout(functon() {
+setTimeout(function() {
   FullyKiosk.bind("fully_kiosk_id", "light.dashboard_screen", "binary_sensor.dashboard_motion");
 }, 200);
 ```
