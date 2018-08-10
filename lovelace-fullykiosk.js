@@ -1,10 +1,8 @@
 var FullyKiosk = FullyKiosk || (function() {
-  if(!window['fully'])
-    return { bind : (device, screen, motion) => {} };
 
   var _active = false
   var _screen;
-  var _screen_state = fully.getScreenOn();
+  var _screen_state;
   var _screen_state_last = !_screen_state;
   var _motion;
   var _motion_state = false;
@@ -67,10 +65,13 @@ var FullyKiosk = FullyKiosk || (function() {
 
   return {
     bind: (device, screen, motion) => {
+      if(!window['fully'])
+        return;
       if(device != fully.getDeviceId()) { return; }
       if(!_active) {
         _active = true;
         _screen = screen;
+        _screen_state = fully.getScreenOn();
         _motion = motion;
         _register();
         _sendMotionState();
@@ -87,6 +88,21 @@ var FullyKiosk = FullyKiosk || (function() {
     onMotion: () => {
       _motion_state = true;
       _sendMotionState();
-    }
+    },
+    debug: () => {
+      let error = "OK. Everything should be working!";
+      if(!navigator.userAgent.includes("Linux; Android"))
+      {
+        error = "ERROR! Are you really using Fully Kiosk Browser?.";
+      } else if(!window["fully"]) {
+        error = "ERROR! Are you using Fully Kiosk? Is Javascript Interface enabled?";
+      } else if(!_active) {
+        error = "ERROR! This device has not been bound to home-assistant. Device ID: " + fully.getDeviceId();
+      } else {
+        error = "OK. This device is bound to: " + _screen + " and " + _motion +".";
+      }
+
+      document.querySelector("home-assistant").shadowRoot.querySelector("home-assistant-main").shadowRoot.querySelector("app-drawer-layout iron-pages partial-panel-resolver").shadowRoot.querySelector("#panel ha-panel-lovelace").shadowRoot.querySelector("hui-root").shadowRoot.querySelector("ha-app-layout app-header app-toolbar div[main-title]").innerHTML = "lovelace-fullykiosk: " + error;
+    },
   };
 }());

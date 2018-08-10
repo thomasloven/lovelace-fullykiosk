@@ -64,6 +64,29 @@ something moves in front of the camera.
 Both the screen light and the motion sensor has the attributes `battery_level`
 and `charging` which contains battery and charge status.
 
+## If things don't work
+
+First things first: Check your home-assistant log. Does it say something about
+"`Unexpected token <`"? If so, you need to download the RAW file from github,
+not the html version. Use the link from point 1 in the installation
+instructions.
+
+If the log says something about "`kiosk-config.js:1:20`" you caught me before I
+changed a bug in the documentation. Make sure the first line of
+`kiosk-config.js` says `function`, not `functon`.
+
+If that didn't work, you'll need to know a little trick.
+When you change a script (e.g. `kiosk-config.js`), you need to avoid that your
+browser gets a cached version without your new changes. The easiest way to do
+this is to add `?1` after the URL in `ui-lovelace.yaml`, and increase that
+number every time you make a change.
+
+The first change you need to make to `kiosk-config.js` is to add
+`FullyKiosk.debug();` before `}, 200);`. Then increase the number, reload the
+page, and you should see that the title of the lovelace page has changed. Hopefully the new title will give you some hints as to what might be wrong.
+
+If not, I recommend checking the home-assistant log and the log output of your computers browser.
+
 ## Camera
 
 Bonus note: To get a camera view from the device into
