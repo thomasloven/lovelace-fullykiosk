@@ -30,7 +30,7 @@ binary_sensor:
 
 ```js
 setTimeout(function() {
-  FullyKiosk.bind("fully_kiosk_id", "light.dashboard_screen", "binary_sensor.dashboard_motion");
+  LovelaceFullyKiosk.bind("fully_kiosk_id", "light.dashboard_screen", "binary_sensor.dashboard_motion");
 }, 200);
 ```
 where `fully_kiosk_id` is the Device ID from Fully Kiosk Browser (available
@@ -75,6 +75,8 @@ If the log says something about "`kiosk-config.js:1:20`" you caught me before I
 changed a bug in the documentation. Make sure the first line of
 `kiosk-config.js` says `function`, not `functon`.
 
+If the log says something about "`FullyKiosk.bind is not a function`", You're probably running the latest version of Fully Kiosk Browser, but not of the script. Download the script again, and make sure that you change every occurence of `FullyKiosk` in your `kiosk-config.js` to `LovelaceFullyKiosk`.
+
 If that didn't work, you'll need to know a little trick.
 When you change a script (e.g. `kiosk-config.js`), you need to avoid that your
 browser gets a cached version without your new changes. The easiest way to do
@@ -82,7 +84,7 @@ this is to add `?1` after the URL in `ui-lovelace.yaml`, and increase that
 number every time you make a change.
 
 The first change you need to make to `kiosk-config.js` is to add
-`FullyKiosk.debug();` before `}, 200);`. Then increase the number, reload the
+`LovelaceFullyKiosk.debug();` before `}, 200);`. Then increase the number, reload the
 page, and you should see that the title of the lovelace page has changed. Hopefully the new title will give you some hints as to what might be wrong.
 
 If not, I recommend checking the home-assistant log and the log output of your computers browser.

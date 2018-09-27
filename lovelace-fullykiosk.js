@@ -1,4 +1,4 @@
-var FullyKiosk = FullyKiosk || (function() {
+var LovelaceFullyKiosk = LovelaceFullyKiosk || (function() {
 
   var _active = false
   var _screen;
@@ -10,9 +10,9 @@ var FullyKiosk = FullyKiosk || (function() {
   var _sync_timer;
 
   _register = function() {
-    fully.bind('screenOn', 'FullyKiosk.onScreenOn();');
-    fully.bind('screenOff', 'FullyKiosk.onScreenOff();');
-    fully.bind('onMotion', 'FullyKiosk.onMotion();');
+    fully.bind('screenOn', 'LovelaceFullyKiosk.onScreenOn();');
+    fully.bind('screenOff', 'LovelaceFullyKiosk.onScreenOff();');
+    fully.bind('onMotion', 'LovelaceFullyKiosk.onMotion();');
     let hass = document.querySelector('home-assistant').hass;
     hass.connection.subscribeEvents((event)=> {
       if(event.data.domain === 'light' && event.data.service_data.entity_id.toString() === _screen) {
