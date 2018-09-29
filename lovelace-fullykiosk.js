@@ -54,6 +54,7 @@ var LovelaceFullyKiosk = LovelaceFullyKiosk || (function() {
       attributes: {
         battery_level: fully.getBatteryLevel(),
         charging: fully.isPlugged(),
+        device_class: 'motion',
       },
     });
     _sendScreenState();
