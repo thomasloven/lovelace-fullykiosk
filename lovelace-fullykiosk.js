@@ -34,14 +34,15 @@ var LovelaceFullyKiosk = LovelaceFullyKiosk || (function() {
 
   _sendScreenState = function() {
     let hass = document.querySelector('home-assistant').hass;
-    hass.callApi('post', "states/"+_screen, {
-      state: _screen_state?'on':'off',
-      attributes: {
+    let attr = Object.assign(hass.states[_screen].attributes, {
         brightness: fully.getScreenBrightness()*255/170,
         supported_features: 1,
         battery_level: fully.getBatteryLevel(),
         charging: fully.isPlugged(),
-      },
+      });
+    hass.callApi('post', "states/"+_screen, {
+      state: _screen_state?'on':'off',
+      attributes: attr,
     });
   }
 
@@ -49,13 +50,14 @@ var LovelaceFullyKiosk = LovelaceFullyKiosk || (function() {
     clearTimeout(_sync_timer);
     let timeout = _motion_state?5000:10000;
     let hass = document.querySelector('home-assistant').hass;
-    hass.callApi('post', "states/"+_motion, {
-      state: _motion_state?'on':'off',
-      attributes: {
+    let attr = Object.assign(hass.states[_motion].attributes, {
         battery_level: fully.getBatteryLevel(),
         charging: fully.isPlugged(),
         device_class: 'motion',
-      },
+    });
+    hass.callApi('post', "states/"+_motion, {
+      state: _motion_state?'on':'off',
+      attributes: attr,
     });
     _sendScreenState();
     _sync_timer = setTimeout(() => {
