@@ -1,5 +1,7 @@
 # lovelace-fullykiosk
 
+# This is deprecated - Use [browser_mod](https://github.com/thomasloven/hass-browser_mod) instead
+
 Lovelace plugin for use with
 [Fully Kiosk Browser](https://www.ozerov.de/fully-kiosk-browser/).
 
